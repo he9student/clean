@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>洗衣机拼团 · 校内清洗</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: linear-gradient(145deg, #f0f5ff 0%, #dce6ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .container {
+            max-width: 520px;
+            width: 100%;
+        }
+        .main-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 64px 64px 48px 48px;
+            padding: 28px 18px 32px;
+            border: 2px solid rgba(60, 120, 255, 0.3);
+            box-shadow: 0 20px 60px rgba(40, 80, 200, 0.15), 0 0 40px rgba(60, 140, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(100, 180, 255, 0.12), transparent 60%);
+            animation: glowShift 8s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+        @keyframes glowShift {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+            100% { transform: translate(10%, 10%) scale(1.3); opacity: 1; }
+        }
+        .header {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #1a3a8a, #4a8eff, #1a3a8a);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shimmer 3s linear infinite;
+            display: inline-block;
+            padding: 0 8px;
+        }
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        .header .sub-badge {
+            display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 14px;
+            background: rgba(60, 120, 255, 0.1);
+            backdrop-filter: blur(6px);
+            padding: 8px 20px;
+            border-radius: 60px;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #1a3a7a;
+            border: 1px solid rgba(60, 120, 255, 0.2);
+            font-size: 0.95rem;
+        }
+        .sub-badge span {
+            background: linear-gradient(135deg, #2a5fc0, #4a8eff);
+            color: white;
+            padding: 0 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px 14px;
+            margin: 16px 0 6px;
+        }
+        .tag {
+            background: rgba(60, 120, 255, 0.08);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #1a3a7a;
+            border: 1px solid rgba(60, 120, 255, 0.15);
+        }
+        .tag em {
+            font-style: normal;
+            background: #2a5fc0;
+            color: white;
+            padding: 0 12px;
+            border-radius: 30px;
+            margin-left: 4px;
+        }
+        .dorm-info {
+            background: rgba(60, 120, 255, 0.06);
+            border-radius: 40px;
+            padding: 8px 16px;
+            margin: 10px 0 6px;
+            display: inline-block;
+            font-weight: 600;
+            color: #1a3a7a;
+            font-size: 0.85rem;
+            border: 1px solid rgba(60, 120, 255, 0.1);
+        }
+        .selector-area {
+            background: rgba(60, 120, 255, 0.06);
+            border-radius: 48px;
+            padding: 18px 16px;
+            margin: 18px 0 24px;
+            border: 1px solid rgba(60, 120, 255, 0.15);
+            position: relative;
+            z-index: 2;
+        }
+        .selector-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            color: #1a3a7a;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        .selector-label small {
+            font-weight: 400;
+            color: #4a6a9a;
+            font-size: 0.75rem;
+        }
+        .selector-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .option-btn {
+            flex: 1 0 auto;
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid rgba(60, 120, 255, 0.15);
+            border-radius: 60px;
+            padding: 12px 6px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1a3a7a;
+            transition: all 0.15s;
+            cursor: pointer;
+            text-align: center;
+            min-width: 50px;
+        }
+        .option-btn.active {
+            background: linear-gradient(135deg, #2a5fc0, #4a8eff);
+            border-color: #4a8eff;
+            color: white;
+            box-shadow: 0 0 30px rgba(60, 140, 255, 0.35);
+            transform: scale(1.04);
+        }
+        .option-btn:active { transform: scale(0.94); }
+        .option-btn .badge-small {
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 600;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+        .option-btn.active .badge-small { color: #d4e6ff; }
+        .result-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 48px;
+            padding: 20px 22px;
+            margin: 8px 0 20px;
+            border: 2px solid rgba(60, 120, 255, 0.15);
+            position: relative;
+            z-index: 2;
+        }
+        .result-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px 12px;
+        }
+        .result-row .label {
+            font-weight: 600;
+            color: #2a4a7a;
+            font-size: 1rem;
+        }
+        .result-row .price-total {
+            font-weight: 900;
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #1a3a8a, #4a8eff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -1px;
+        }
+        .result-row .price-total small {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #4a6a9a;
+        }
+        .per-machine-box {
+            background: rgba(60, 120, 255, 0.06);
+            padding: 4px 18px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1a3a7a;
+            border: 1px solid rgba(60, 120, 255, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .per-person-box {
+            background: rgba(60, 120, 255, 0.08);
+            padding: 6px 22px;
+            border-radius: 60px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #1a3a7a;
+            border: 2px solid rgba(60, 120, 255, 0.15);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .per-person-box span {
+            font-weight: 400;
+            font-size: 0.9rem;
+            color: #4a6a9a;
+        }
+        .highlight-tag {
+            background: linear-gradient(135deg, #f9d976, #f5b342);
+            padding: 0 20px;
+            border-radius: 60px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #1f1a0a;
+            border: 2px solid #ffd966;
+            display: inline-block;
+            line-height: 2;
+            animation: pulseGlow 1.8s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(255, 200, 50, 0.2); }
+            100% { box-shadow: 0 0 40px rgba(255, 200, 50, 0.4); }
+        }
+        .deep-toggle {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 14px 0 6px;
+            flex-wrap: wrap;
+            background: rgba(60, 120, 255, 0.05);
+            padding: 10px 18px;
+            border-radius: 60px;
+            border: 1px solid rgba(60, 120, 255, 0.1);
+        }
+        .deep-toggle label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: #1a3a7a;
+            cursor: pointer;
+        }
+        .deep-toggle input {
+            width: 20px;
+            height: 20px;
+            accent-color: #4a8eff;
+        }
+        .deep-toggle .deep-price {
+            font-weight: 700;
+            color: #2a5fc0;
+            background: rgba(60, 120, 255, 0.08);
+            padding: 0 14px;
+            border-radius: 40px;
+        }
+        .plan-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 16px 0 6px;
+            position: relative;
+            z-index: 2;
+        }
+        .plan-mini {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 40px;
+            padding: 10px 16px 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border: 1.5px solid rgba(60, 120, 255, 0.1);
+        }
+        .plan-mini .left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: #1a3a7a;
+        }
+        .plan-mini .left .emoji { font-size: 1.2rem; }
+        .plan-mini .right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .plan-mini .right .price {
+            font-weight: 800;
+            color: #2a5fc0;
+        }
+        .plan-mini .right .per {
+            background: rgba(60, 120, 255, 0.08);
+            padding: 0 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #3a5a8a;
+        }
+        .plan-mini.highlight-mini {
+            border-color: rgba(255, 200, 50, 0.4);
+            background: rgba(255, 215, 0, 0.06);
+        }
+        .badge-free-mini {
+            background: linear-gradient(135deg, #f9d976, #f5b342);
+            border-radius: 40px;
+            padding: 0 14px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #1a1508;
+            line-height: 1.8;
+        }
+        .note-box {
+            background: rgba(60, 120, 255, 0.05);
+            border-radius: 32px;
+            padding: 16px 20px;
+            margin: 18px 0 12px;
+            border-left: 6px solid #4a8eff;
+            border: 1px solid rgba(60, 120, 255, 0.1);
+            border-left-width: 6px;
+            position: relative;
+            z-index: 2;
+        }
+        .note-box p {
+            font-size: 0.85rem;
+            color: #1a3a6a;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 4px 0;
+        }
+        .note-box p strong { color: #1a3a7a; }
+        .footnote {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 18px;
+            background: rgba(60, 120, 255, 0.05);
+            padding: 10px 16px;
+            border-radius: 60px;
+            border: 1px solid rgba(60, 120, 255, 0.1);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #2a4a7a;
+            margin-top: 12px;
+            position: relative;
+            z-index: 2;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1a3a8a, #4a8eff);
+            color: white;
+            border: none;
+            padding: 18px 20px;
+            border-radius: 60px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            width: 100%;
+            margin-top: 16px;
+            box-shadow: 0 8px 32px rgba(60, 140, 255, 0.25);
+            cursor: pointer;
+            position: relative;
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, #6aafff, #4a8eff, #6aafff);
+            background-size: 300% auto;
+            z-index: -1;
+            animation: borderGlow 3s linear infinite;
+            filter: blur(8px);
+            opacity: 0.3;
+        }
+        @keyframes borderGlow {
+            0% { background-position: 0% center; }
+            100% { background-position: 300% center; }
+        }
+        /* ===== 空调+风扇组合模块 ===== */
+        .combo-section {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.06), rgba(255, 180, 50, 0.08));
+            border: 2px solid rgba(255, 200, 50, 0.3);
+            border-radius: 48px;
+            padding: 18px 20px 20px;
+            margin: 18px 0 10px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 0 30px rgba(255, 200, 50, 0.06);
+        }
+        .combo-section .combo-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #1a3a7a;
+            margin-bottom: 8px;
+        }
+        .combo-section .combo-header .celebrate {
+            font-size: 1.6rem;
+            animation: celebratePop 1.2s ease-in-out infinite alternate;
+        }
+        @keyframes celebratePop {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.15) rotate(5deg); }
+        }
+        .combo-section .combo-desc {
+            font-size: 0.92rem;
+            color: #1a3a6a;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 10px 16px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 200, 50, 0.15);
+            margin: 4px 0 12px;
+            line-height: 1.6;
+        }
+        .combo-section .combo-desc strong {
+            color: #b87a1a;
+            background: rgba(255, 200, 50, 0.12);
+            padding: 0 10px;
+            border-radius: 30px;
+        }
+        .combo-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 14px;
+            margin: 10px 0 14px;
+        }
+        .combo-features .feat {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #2a4a7a;
+            border: 1px solid rgba(60, 120, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .combo-contact {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: rgba(255, 215, 0, 0.08);
+            padding: 8px 18px 8px 20px;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 200, 50, 0.15);
+            margin-top: 4px;
+        }
+        .combo-contact .hint {
+            font-weight: 600;
+            color: #1a3a7a;
+            font-size: 0.9rem;
+        }
+        .combo-contact .hint span {
+            background: #f5b342;
+            color: #1a1508;
+            padding: 0 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+        .combo-contact .btn-chat {
+            background: linear-gradient(135deg, #f5b342, #f9d976);
+            border: none;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1f1a0a;
+            box-shadow: 0 4px 16px rgba(255, 200, 50, 0.2);
+            cursor: pointer;
+            transition: 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .combo-contact .btn-chat:active { transform: scale(0.94); }
+        @media (max-width: 430px) {
+            .result-row .price-total { font-size: 2.2rem; }
+            .option-btn { font-size: 0.8rem; padding: 10px 4px; }
+            .plan-mini { padding: 8px 12px; }
+            .header h1 { font-size: 2.2rem; }
+            .combo-contact { flex-direction: column; align-items: stretch; text-align: center; }
+            .combo-contact .btn-chat { justify-content: center; }
+        }
+        .bounce-in { animation: pop 0.2s ease; }
+        @keyframes pop {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="main-card">
+        <div class="header">
+            <h1>🧺 洗·拼团</h1>
+            <div class="sub-badge">
+                <span>⚡ 校内专业team</span> 整挺好 👍👍👍
+            </div>
+            <div class="tag-row">
+                <span class="tag">🦠 暑假归来 · 虫藻攀升</span>
+                <span class="tag">📅 一学期一次 <em>健康</em></span>
+            </div>
+            <div style="font-size:0.85rem; margin-top:8px; background:rgba(60,120,255,0.08); padding:4px 20px; border-radius:60px; display:inline-block; font-weight:600; color:#1a3a7a; border:1px solid rgba(60,120,255,0.1);">
+                💰 人均 10元起 · 宿舍平摊
+            </div>
+            <div class="dorm-info">
+                🏠 1台洗衣机 = 1个宿舍（4人）· 价格按4人平摊
+            </div>
+        </div>
+
+        <div class="selector-area">
+            <div class="selector-label">
+                <span>👥 拼团台数</span>
+                <small>（几台洗衣机 = 几个宿舍拼）</small>
+            </div>
+            <div class="selector-options" id="peopleSelector">
+                <div class="option-btn" data-people="1">1台 <span class="badge-small">1个宿舍</span></div>
+                <div class="option-btn" data-people="2">2台 <span class="badge-small">2个宿舍</span></div>
+                <div class="option-btn active" data-people="3">3台 <span class="badge-small">3个宿舍</span></div>
+                <div class="option-btn" data-people="5">5台 <span class="badge-small">✨半价1台</span></div>
+                <div class="option-btn" data-people="8">8台 <span class="badge-small">🎉免费1台</span></div>
+            </div>
+        </div>
+
+        <div class="result-panel" id="resultPanel">
+            <div class="result-row">
+                <span class="label" id="unitLabel">🧾 总费用</span>
+                <span class="price-total" id="totalPrice">150 <small>元</small></span>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 8px; gap: 8px;">
+                <div class="per-machine-box" id="perMachineBox">
+                    📦 每台均价 <span id="perMachinePrice">50.00</span> 元
+                </div>
+                <div class="per-person-box" id="perPersonBox">
+                    🏠 宿舍人均 <span id="perPersonPrice">12.50</span> 元
+                </div>
+                <div id="specialBadge" class="highlight-tag" style="display: none;">🎁 免费1台</div>
+            </div>
+            <div style="font-size:0.8rem; color:#4a6a9a; margin-top:4px; display:flex; flex-wrap:wrap; gap:4px 18px; background:rgba(60,120,255,0.04); padding:4px 14px; border-radius:40px;">
+                <span id="machineCount">📦 3台洗衣机</span>
+                <span id="unitPriceDetail">💰 50元/台</span>
+            </div>
+            <div class="deep-toggle">
+                <label>
+                    <input type="checkbox" id="deepCheckbox"> 🔧 深度清洗 (拆卸内胆)
+                </label>
+                <span class="deep-price">+25元/台</span>
+                <span style="font-size:0.7rem; color:#4a6a9a;">(可议价)</span>
+            </div>
+            <div style="font-size:0.75rem; color:#4a6a9a; margin-top:8px; display:flex; flex-wrap:wrap; gap:4px 18px; border-top:1px solid rgba(60,120,255,0.08); padding-top:10px;">
+                <span>✔ 修坏包维修</span>
+                <span>✔ 测机后离开</span>
+                <span>✔ 3天质保</span>
+            </div>
+        </div>
+
+        <!-- ===== 空调+风扇组合模块 ===== -->
+        <div class="combo-section">
+            <div class="combo-header">
+                <span class="celebrate">🎉</span> 空调 + 风扇 · 组合服务
+                <span style="font-size:0.8rem; background:rgba(255,200,50,0.15); padding:0 14px; border-radius:40px; color:#b87a1a; font-weight:700;">新上线</span>
+            </div>
+            <div class="combo-desc">
+                💨 部分同学希望清洗 <strong>空调</strong> + <strong>风扇</strong> 模式，目前<strong>不接受单独清洗</strong>，可以和洗衣机一起打包服务。
+                <span style="display:block; margin-top:4px; color:#3a5a8a;">📦 组合更划算 · 一站式搞定宿舍电器</span>
+            </div>
+            <div class="combo-features">
+                <span class="feat">❄️ 空调滤网清洗</span>
+                <span class="feat">🌀 风扇拆洗</span>
+                <span class="feat">🧹 外壳除尘</span>
+                <span class="feat">⚡ 随洗衣机上门</span>
+            </div>
+            <div class="combo-contact">
+                <span class="hint">💬 觉得合适？ <span>私聊我</span> 了解打包价</span>
+                <button class="btn-chat" id="chatBtn">💬 私聊咨询</button>
+            </div>
+            <div style="font-size:0.7rem; color:#4a6a9a; margin-top:8px; text-align:center; border-top:1px dashed rgba(255,200,50,0.2); padding-top:8px;">
+                ⚡ 组合服务仅与洗衣机拼团打包，不单独接单
+            </div>
+        </div>
+
+        <div style="margin-top: 6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:0 4px;">
+                <span style="font-weight:700; color:#1a3a7a; font-size:0.95rem;">📋 全部拼团方案</span>
+                <span style="background:rgba(60,120,255,0.06); padding:0 16px; border-radius:40px; font-size:0.7rem; color:#4a6a9a; border:1px solid rgba(60,120,255,0.08);">每台 = 1个宿舍(4人)</span>
+            </div>
+            <div class="plan-list" id="planList"></div>
+        </div>
+
+        <div class="note-box">
+            <p><span style="font-size:1rem;">🛠️</span> <strong>修坏包维修</strong> · 清洗前测机，清洗后测机无问题离开</p>
+            <p><span style="font-size:1rem;">📅</span> 清洗完 <strong>3天内</strong> 无问题，后续不担责；实在问题我们承担</p>
+            <p><span style="font-size:1rem;">🤝</span> 拼团同学 <strong>尽量在一个宿舍</strong>，方便沟通</p>
+            <p><span style="font-size:1rem;">👑</span> <strong>团长福利</strong>：自己开团邀请同学，为自己赢得免费清洗机会，团长总结付款</p>
+        </div>
+
+        <div class="footnote">
+            <span>📢 群内自由组队</span>
+            <span>🙋 自己开团当团长</span>
+            <span>💰 一起A钱</span>
+        </div>
+
+        <button class="btn-primary" id="actionBtn">
+            🚀 立即开团 · 邀请室友
+        </button>
+        <div style="text-align:center; margin-top:14px; font-size:0.7rem; color:#4a6a9a; background:rgba(60,120,255,0.04); padding:6px 12px; border-radius:60px; border:1px solid rgba(60,120,255,0.05);">
+            ⚡ 一个宿舍为一个单人团 · 拼团以团长付款为准
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ===== 价格配置 =====
+        // 普通清洗单价（每台）
+        const unitPriceMap = {
+            1: 60,
+            2: 55,
+            3: 50,
+            5: 50,  // 五人团：半价1台 + 4台原价
+            8: 48   // 八人团：免费1台 + 7台原价
+        };
+
+        const DORM_SIZE = 4;  // 每台洗衣机对应1个宿舍，4人
+
+        let currentPeople = 3;
+        let deepChecked = false;
+
+        const peopleBtns = document.querySelectorAll('#peopleSelector .option-btn');
+        const totalPriceEl = document.getElementById('totalPrice');
+        const perMachinePriceEl = document.getElementById('perMachinePrice');
+        const perPersonPriceEl = document.getElementById('perPersonPrice');
+        const perPersonBox = document.getElementById('perPersonBox');
+        const perMachineBox = document.getElementById('perMachineBox');
+        const specialBadge = document.getElementById('specialBadge');
+        const deepCheckbox = document.getElementById('deepCheckbox');
+        const planListEl = document.getElementById('planList');
+        const resultPanel = document.getElementById('resultPanel');
+        const machineCountEl = document.getElementById('machineCount');
+        const unitPriceDetailEl = document.getElementById('unitPriceDetail');
+
+        // ===== 工具：保留2位小数 =====
+        function toFixed2(num) {
+            return num.toFixed(2);
+        }
+
+        // ===== 核心计算函数 =====
+        function calcPrice(people, deep) {
+            const unitPrice = unitPriceMap[people] || 50;
+            let total = 0;
+            let machineCount = people;
+            let detail = '';
+
+            // 特殊处理 5人团 和 8人团
+            if (people === 5) {
+                // 半价1台：25元，另外4台：50*4=200元
+                total = 25 + 50 * 4;
+                detail = '1台半价25 + 4台×50';
+            } else if (people === 8) {
+                // 免费1台：0元，另外7台：48*7=336元
+                total = 0 + 48 * 7;
+                detail = '1台免费 + 7台×48';
+            } else {
+                // 普通团：单价 × 台数
+                total = unitPrice * people;
+                detail = people + '台×' + unitPrice;
+            }
+
+            // 深度清洗：每台 +25
+            if (deep) {
+                total += 25 * people;
+                detail += ' + 深度25×' + people;
+            }
+
+            // 每台均价 = 总价 ÷ 台数
+            const perMachine = total / people;
+            // 宿舍人均 = 每台均价 ÷ 4
+            const perPerson = perMachine / DORM_SIZE;
+
+            return { total, perMachine, perPerson, unitPrice, machineCount, detail };
+        }
+
+        // ===== 更新UI =====
+        function updateUI(people, deep) {
+            const { total, perMachine, perPerson, unitPrice, machineCount, detail } = calcPrice(people, deep);
+
+            totalPriceEl.innerHTML = total + ' <small>元</small>';
+            perMachinePriceEl.textContent = toFixed2(perMachine);
+            perPersonPriceEl.textContent = toFixed2(perPerson);
+
+            machineCountEl.textContent = '📦 ' + machineCount + '台洗衣机';
+            unitPriceDetailEl.textContent = '💰 ' + detail;
+
+            // 视觉反馈
+            if (people === 8 && !deep) {
+                perMachineBox.style.background = 'rgba(255, 200, 50, 0.12)';
+                perMachineBox.style.borderColor = 'rgba(255, 200, 50, 0.25)';
+                perPersonBox.style.background = 'rgba(255, 200, 50, 0.15)';
+                perPersonBox.style.borderColor = 'rgba(255, 200, 50, 0.3)';
+            } else if (people === 5 && !deep) {
+                perMachineBox.style.background = 'rgba(100, 200, 255, 0.10)';
+                perMachineBox.style.borderColor = 'rgba(100, 200, 255, 0.20)';
+                perPersonBox.style.background = 'rgba(100, 200, 255, 0.12)';
+                perPersonBox.style.borderColor = 'rgba(100, 200, 255, 0.25)';
+            } else {
+                perMachineBox.style.background = 'rgba(60, 120, 255, 0.06)';
+                perMachineBox.style.borderColor = 'rgba(60, 120, 255, 0.1)';
+                perPersonBox.style.background = 'rgba(60, 120, 255, 0.08)';
+                perPersonBox.style.borderColor = 'rgba(60, 120, 255, 0.15)';
+            }
+
+            // 特殊标签
+            if (people === 8 && !deep) {
+                specialBadge.style.display = 'inline-block';
+                specialBadge.textContent = '🎁 免费1台';
+            } else if (people === 5 && !deep) {
+                specialBadge.style.display = 'inline-block';
+                specialBadge.textContent = '✨ 半价1台';
+            } else {
+                specialBadge.style.display = 'none';
+            }
+
+            // 更新按钮状态
+            peopleBtns.forEach(btn => {
+                const p = parseInt(btn.dataset.people, 10);
+                btn.classList.toggle('active', p === people);
+            });
+
+            renderPlanList(people, deep);
+        }
+
+        // ===== 渲染方案列表 =====
+        function renderPlanList(activePeople, deep) {
+            let html = '';
+            const keys = [1, 2, 3, 5, 8];
+            for (const p of keys) {
+                const { total, perMachine, perPerson, machineCount, detail } = calcPrice(p, deep);
+                let extra = '';
+                if (p === 5 && !deep) extra = '<span class="badge-free-mini">✨半价1台</span>';
+                if (p === 8 && !deep) extra = '<span class="badge-free-mini">🎉免费1台</span>';
+                const isActive = (p === activePeople);
+                const highlightClass = (p === 5 || p === 8) ? 'highlight-mini' : '';
+                const emoji = p === 1 ? '🧑' : p === 2 ? '👫' : p === 3 ? '👨‍👩‍👦' : p === 5 ? '🌟' : '🎉';
+                const label = p + '台拼';
+                html += `
+                    <div class="plan-mini ${highlightClass}" style="${isActive ? 'border-color:#4a8eff; background:rgba(60,120,255,0.08);' : ''}">
+                        <div class="left">
+                            <span class="emoji">${emoji}</span>
+                            ${label} ${extra}
+                            <span style="font-size:0.65rem; color:#4a6a9a; font-weight:400;">${machineCount}个宿舍</span>
+                        </div>
+                        <div class="right">
+                            <span class="price">${total}元</span>
+                            <span class="per">📦${toFixed2(perMachine)}/台 · 🏠${toFixed2(perPerson)}/人</span>
+                        </div>
+                    </div>
+                `;
+            }
+            planListEl.innerHTML = html;
+        }
+
+        // ===== 事件绑定 =====
+        peopleBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const people = parseInt(this.dataset.people, 10);
+                if (people === currentPeople) return;
+                currentPeople = people;
+                updateUI(currentPeople, deepChecked);
+                resultPanel.classList.add('bounce-in');
+                setTimeout(() => resultPanel.classList.remove('bounce-in'), 200);
+            });
+        });
+
+        deepCheckbox.addEventListener('change', function() {
+            deepChecked = this.checked;
+            updateUI(currentPeople, deepChecked);
+        });
+
+        document.getElementById('actionBtn').addEventListener('click', function() {
+            const { total, perMachine, perPerson, machineCount, detail } = calcPrice(currentPeople, deepChecked);
+            const deepText = deepChecked ? ' (含深度清洗)' : '';
+            alert('📱 你选择了 ' + currentPeople + '台拼团' + deepText + '\n📦 ' + machineCount + '台洗衣机\n💰 总价: ' + total + '元\n📦 每台均价: ' + toFixed2(perMachine) + '元\n🏠 宿舍人均: ' + toFixed2(perPerson) + '元\n\n快去群里@室友 拼团吧！');
+        });
+
+        document.getElementById('chatBtn').addEventListener('click', function() {
+            alert('💬 欢迎私聊咨询空调+风扇打包价！\n📱 请加微信：xxxxxx（或直接在群里@我）');
+        });
+
+        // ===== 初始化 =====
+        updateUI(3, false);
+    })();
+</script>
+</body>
+</html>
